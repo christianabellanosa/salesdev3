@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>SIP_Rule</members>
+        <members>SIP_RuleInterface</members>
+        <members>SIP_RuleSetEngineInterface</members>
+        <members>SIP_SumConsumedGroupRule</members>
+        <members>SIP_SumDepositRule</members>
+        <members>SIP_SumConsumedAmenityRule</members>
+        <members>SIP_SumConsumedDepositRule</members>
+        <members>Sip_AmenityController</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>Sip_uaBankingController</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
+        <members>JSGroups__c</members>
+        <members>Group_User__c</members>
+        <members>Group_Amenity__c</members>
+        <members>Group_Account__c</members>
+        <name>CustomObject</name>
+    </types>
+    <version>54.0</version>
+</Package>
