@@ -1,0 +1,252 @@
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+            <div class="spinner">
+            </div>
+        </lightning-spinner>
+    </template>
+    <lightning-card title="Groups">
+        <lightning-button variant= "brand" label="New" slot="actions" onclick={openGroupModal}></lightning-button>
+        <div style="height: 300px;">
+            <lightning-datatable
+                    key-field="id"
+                    data={groups}
+                    columns={groupcolumns}
+                    hide-checkbox-column>
+            </lightning-datatable>
+        </div>
+    </lightning-card>
+    <div class="slds-p-top_large">
+        <lightning-card title="Group Accounts">
+            <lightning-button variant="brand" label="New" slot="actions" onclick={openModal}></lightning-button>
+            <div style="height: 300px;">
+                <lightning-datatable
+                        key-field="id"
+                        data={accounts}
+                        columns={accountcolumns}
+                        hide-checkbox-column>
+                </lightning-datatable>
+            </div>
+        </lightning-card>
+    </div>
+    
+    <template if:true={isGroupModalOpen}>
+        <!-- Modal/Popup Box LWC starts here -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeGroupModal}>
+                        <lightning-icon icon-name="utility:close"
+                            alternative-text="close"
+                            variant="inverse"
+                            size="small" ></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New JS Group</h2>
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_large" id="modal-content-id-1">
+                    <div class="slds-p-bottom_x-small">
+                        <lightning-input required="" type="text" label="Name" onchange={handleNameChange} ></lightning-input>
+                    </div>
+                    <!-- Search for Group Accounts -->
+                    <div class="slds-p-bottom_x-small">
+                        <div class="slds-p-bottom_x-small">
+                            <div class="slds-form-element" onmouseleave={toggleResultGroup} data-source="lookupContainerGroup">
+                                <div class="slds-combobox_container slds-has-selection">
+                                    <label class="slds-form-element__label required-field" for="combobox-id-1">Group Account</label>
+                                    <div class="lookupInputContainerGroup slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click"
+                                        aria-expanded="false" aria-haspopup="listbox" role="combobox">
+                                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+                                            <div class="searchBoxWrapper slds-show">
+                                                <!--Lookup Input Field-->
+                                                <lightning-input type="search"
+                                                    data-source="searchInputFieldGroup"
+                                                    onclick={toggleResultGroup}
+                                                    onchange={handleGroupAccountKeyChange}
+                                                    is-loading={isSearchLoadingGroup}
+                                                    value={selectedGroupAccountName}
+                                                    variant="label-hidden"
+                                                    placeholder="Select Group Account">
+                                                </lightning-input>
+                                            </div>
+                                        </div>
+        
+                                        <!-- lookup search result part start-->
+                                        <template if:true={listGroupAccounts}>
+                                            <div style="margin-top:0px" id="listbox-id-5"
+                                                class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid"
+                                                role="listbox">
+                                                <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                    <template for:each={listGroupAccounts} for:item="obj">
+                                                        <li key={obj.Id} role="presentation" class="slds-listbox__item">
+                                                            <div data-recid={obj.Id} data-recname={obj.Name}
+                                                                onclick={handleSelectedGroupAccount}
+                                                                class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta"
+                                                                role="option">
+                                                                <span style="pointer-events: none;"
+                                                                    class="slds-media__body">
+                                                                    <span
+                                                                        class="slds-listbox__option-text slds-listbox__option-text_entity">{obj.Name}</span>
+                                                                </span>
+                                                            </div>
+                                                        </li>
+                                                    </template>
+                                                </ul>
+                                            </div>
+                                        </template>
+                                        <!--ERROR msg, if there is no records..-->
+                                        <template if:false={hasRecordsGroup}>
+                                            <div style="margin-top:0px"
+                                                class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid"
+                                                role="listbox">
+                                                <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                    <li class="slds-listbox__item"
+                                                        style="text-align: center; font-weight: bold;">No records found,
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Search for Group Amenities -->
+                    <div class="slds-p-bottom_x-small">
+                        <div class="slds-p-bottom_x-small">
+                            <div class="slds-form-element" onmouseleave={toggleResultAmenity} data-source="lookupContainerAmenity">
+                                <div class="slds-combobox_container slds-has-selection">
+                                    <label class="slds-form-element__label required-field" for="combobox-id-1">Group Amenity</label>
+                                    <div class="lookupInputContainerAmenity slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click"
+                                        aria-expanded="false" aria-haspopup="listbox" role="combobox">
+                                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+                                            <div class="searchBoxWrapper slds-show">
+                                                <!--Lookup Input Field-->
+                                                <lightning-input type="search"
+                                                    data-source="searchInputFieldAmenity"
+                                                    onclick={toggleResultAmenity}
+                                                    onchange={handleGroupAmenityKeyChange}
+                                                    is-loading={isSearchLoadingAmenity}
+                                                    value={selectedGroupAmenityName}
+                                                    variant="label-hidden"
+                                                    placeholder="Select Group Amenity">
+                                                </lightning-input>
+                                            </div>
+                                        </div>
+        
+                                        <!-- lookup search result part start-->
+                                        <template if:true={listGroupAmenities}>
+                                            <div style="margin-top:0px" id="listbox-id-6"
+                                                class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid"
+                                                role="listbox">
+                                                <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                    <template for:each={listGroupAmenities} for:item="obj">
+                                                        <li key={obj.Id} role="presentation" class="slds-listbox__item">
+                                                            <div data-recid={obj.Id} data-recname={obj.Name}
+                                                                onclick={handleSelectedGroupAmenity}
+                                                                class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta"
+                                                                role="option">
+                                                                <span style="pointer-events: none;"
+                                                                    class="slds-media__body">
+                                                                    <span
+                                                                        class="slds-listbox__option-text slds-listbox__option-text_entity">{obj.Name}</span>
+                                                                </span>
+                                                            </div>
+                                                        </li>
+                                                    </template>
+                                                </ul>
+                                            </div>
+                                        </template>
+                                        <!--ERROR msg, if there is no records..-->
+                                        <template if:false={hasRecordsAmenity}>
+                                            <div style="margin-top:0px"
+                                                class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid"
+                                                role="listbox">
+                                                <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                    <li class="slds-listbox__item"
+                                                        style="text-align: center; font-weight: bold;">No records found,
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Search for Group User -->
+                    <div class="slds-p-bottom_x-small">
+                        <div class="slds-p-bottom_x-small">
+                            <div class="slds-form-element" onmouseleave={toggleResultUser} data-source="lookupContainerUser">
+                                <div class="slds-combobox_container slds-has-selection">
+                                    <label class="slds-form-element__label required-field" for="combobox-id-1">Group User</label>
+                                    <div class="lookupInputContainerUser slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click"
+                                        aria-expanded="false" aria-haspopup="listbox" role="combobox">
+                                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+                                            <div class="searchBoxWrapper slds-show">
+                                                <!--Lookup Input Field-->
+                                                <lightning-input type="search"
+                                                    data-source="searchInputFieldUser"
+                                                    onclick={toggleResultUser}
+                                                    onchange={handleGroupUserKeyChange}
+                                                    is-loading={isSearchLoadingUser}
+                                                    value={selectedGroupUserName}
+                                                    variant="label-hidden"
+                                                    placeholder="Select Group User">
+                                                </lightning-input>
+                                            </div>
+                                        </div>
+        
+                                        <!-- lookup search result part start-->
+                                        <template if:true={listGroupUser}>
+                                            <div style="margin-top:0px" id="listbox-id-8"
+                                                class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid"
+                                                role="listbox">
+                                                <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                    <template for:each={listGroupUser} for:item="obj">
+                                                        <li key={obj.Id} role="presentation" class="slds-listbox__item">
+                                                            <div data-recid={obj.Id} data-recname={obj.Name}
+                                                                onclick={handleSelectedGroupUser}
+                                                                class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta"
+                                                                role="option">
+                                                                <span style="pointer-events: none;"
+                                                                    class="slds-media__body">
+                                                                    <span
+                                                                        class="slds-listbox__option-text slds-listbox__option-text_entity">{obj.Name}</span>
+                                                                </span>
+                                                            </div>
+                                                        </li>
+                                                    </template>
+                                                </ul>
+                                            </div>
+                                        </template>
+                                        <!--ERROR msg, if there is no records..-->
+                                        <template if:false={hasRecordsUser}>
+                                            <div style="margin-top:0px"
+                                                class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid"
+                                                role="listbox">
+                                                <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                    <li class="slds-listbox__item"
+                                                        style="text-align: center; font-weight: bold;">No records found,
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal/Popup Box LWC footer starts here -->
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={closeGroupModal} title="Cancel">Cancel</button>
+                    <button class="slds-button slds-button_brand" onclick={handleSaveJSGroup} title="Save" disabled={disableButton}>Save</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

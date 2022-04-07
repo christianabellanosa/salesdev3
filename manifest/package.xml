@@ -22,5 +22,9 @@
         <members>Group_Account__c</members>
         <name>CustomObject</name>
     </types>
+    <types>
+        <members>*</members>
+        <name>LightningComponentBundle</name>
+    </types>
     <version>54.0</version>
 </Package>
