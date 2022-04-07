@@ -22,6 +22,8 @@ const accountcolumns = [
 ];
 
 export default class ManageGroup extends LightningElement {
+    //test
+
     groupcolumns = groupcolumns;
     accountcolumns = accountcolumns;
     @track isGroupModalOpen = false;
