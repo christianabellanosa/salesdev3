@@ -13,9 +13,9 @@ public with sharing class SIP_RuleSetEngine implements SIP_RuleSetEngineInterfac
         //Map<Id, Ruleset_Path__c> ruleSetPathMap = new Map<Id, Ruleset_Path__c>([SELECT Id FROM Ruleset_Path__c WHERE Limit__c IN :limitList]);
         //return new List<Id>(ruleSetPathMap.keySet());
         List<Id> lid = new List<Id>();
+        String repChar = permissionPath.replaceAll('\\*', '%');
         for(Ruleset_Path__c rsp : [SELECT Id, Permission_Path__c FROM Ruleset_Path__c WHERE Permission_Path__c 
-        LIKE 'Account=123/Amenity%'
-        AND Permission_Path__c = : permissionPath]){
+        LIKE :repChar]){
             lid.add(rsp.id);
         }
         return lid;
